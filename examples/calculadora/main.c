@@ -24,6 +24,12 @@ que o usuário escolha 2 números racionais./
 //ARQUIVO DE DADOS:
 //Nenhum 
 
+//PARAMETROS:
+// nome            tipo          valor/referencia             descrição   
+//--------------------------------------------------------------------------------------------------------
+// menuIndex       int                valor             apresenta opções que podem ser escolhidas pelo usuário
+// n1, n2         float               valor               numeros racionais
+// result         float            referencia            apresenta os resultados
 
 /**
  * Escreva o programa “calculadora” que recebe 2 números reais e dependendo da
