@@ -12,57 +12,72 @@ void drawMap(int rowsNumber, int columnsNumber, int map[rowsNumber][columnsNumbe
 bool checkMove(int rowsNumber, int columnsNumber, int playerCurrentPosition[2], int map[playerCurrentPosition[X]][playerCurrentPosition[Y]]);
 int main()
 {
+    // Inicialização srand() com uma semente baseada no tempo
+    // Geração de números aleatórios
     srand(time(0));
 
+    // Declaração as proporções máximas do mapa
     int hiNumberSize = 10,
         lowNumberSize = 5;
 
-    int columnsNumber = getRandom(lowNumberSize, hiNumberSize),
-        rowsNumber = getRandom(lowNumberSize, hiNumberSize);
+    // Declaração do número de linhas e colunas do mapa
+    int rowsNumber = getRandom(lowNumberSize, hiNumberSize),
+        columnsNumber = getRandom(lowNumberSize, hiNumberSize);
 
     if (DEBUG_MODE)
     {
         printf("Número de linhas: %i \nNúmero de colunas: %i\n\n\n", rowsNumber, columnsNumber);
     }
 
+    // Declaração do mapa
     int map[rowsNumber][columnsNumber];
+
+    // Para cada linha no mapa
     for (size_t row = 0; row < rowsNumber; row++)
     {
+        // Para cada coluna no mapa
         for (size_t column = 0; column < columnsNumber; column++)
         {
+            // A casa atual (linha, coluna) recebe um valor entre 0 e 1
+            // 0 ---> livre
+            // 1 ---> parede
             map[row][column] = getRandom(0, 1);
         }
     }
 
-    int firstColumn = getRandom(0, columnsNumber);
+    int firstColumn = getRandom(0, (columnsNumber - 1));
 
-    int curentRow = 0;
     int *lastBoard;
     int *currentBoard;
 
     lastBoard = (int[]){0, firstColumn};
+    currentBoard = (int[]){0, firstColumn};
 
-    while (curentRow < rowsNumber)
+    while (currentBoard[X] < rowsNumber)
     {
         currentBoard = setMapValue(columnsNumber, rowsNumber, lastBoard);
 
         if (!(currentBoard[X] == rowsNumber))
         {
 
-            printf("X: %i, Y: %i\n", currentBoard[X], currentBoard[Y]);
+            if (DEBUG_MODE)
+            {
+                printf("X: %i, Y: %i\n", currentBoard[X], currentBoard[Y]);
+            }
+
             map[currentBoard[X]][currentBoard[Y]] = DEBUG_MODE ? DEBUG : LIVRE;
         }
 
-        curentRow = currentBoard[X];
         lastBoard = currentBoard;
     }
-    map[0][firstColumn] = PLAYER; // Primeira casa
+    // Posição de início do player
+    map[0][firstColumn] = PLAYER;
 
     int playerCurrentPosition[2] = {0, firstColumn};
 
-    char movimento;
+    char move;
 
-    while ((movimento != 'x') && (movimento != 'X'))
+    while ((move != 'x') && (move != 'X'))
     {
         system(LIMPARTELA);
         drawMap(rowsNumber, columnsNumber, map, playerCurrentPosition);
@@ -72,14 +87,19 @@ int main()
         // Mostrar direções
         printf("\n\n  (W)\n(A)+(D)\n  (S)\n\n");
 
-        if ((scanf("%c", &movimento)) == 0)
+        if (DEBUG_MODE)
+        {
+            printf(GREEN "Posição do player: (%i, %i)\n\n" RESET, playerCurrentPosition[X], playerCurrentPosition[Y]);
+        }
+
+        if ((scanf("%c", &move)) == 0)
         {
             printf("mensagem de erro..\n");
             getchar();
             getchar();
             return ERRO;
         }
-        if ((movimento == 'w') || (movimento == 'W'))
+        if ((move == 'w') || (move == 'W'))
         {
             playerCurrentPosition[X] = (playerCurrentPosition[X] - 1);
 
@@ -91,7 +111,7 @@ int main()
                 getchar();
             }
         }
-        if ((movimento == 's') || (movimento == 'S'))
+        if ((move == 's') || (move == 'S'))
         {
             playerCurrentPosition[X] = playerCurrentPosition[X] + 1;
 
@@ -103,7 +123,7 @@ int main()
                 getchar();
             }
         }
-        if ((movimento == 'd') || (movimento == 'D'))
+        if ((move == 'd') || (move == 'D'))
         {
             playerCurrentPosition[Y] = playerCurrentPosition[Y] + 1;
 
@@ -115,7 +135,7 @@ int main()
                 getchar();
             }
         }
-        if ((movimento == 'a') || (movimento == 'A'))
+        if ((move == 'a') || (move == 'A'))
         {
             playerCurrentPosition[Y] = playerCurrentPosition[Y] - 1;
 
@@ -140,7 +160,9 @@ int getRandom(int min, int max)
     return num;
 }
 
-int *setMapValue(int columnsNumber, int rowsNumber, int lastBoard[])
+int *setMapValue(int columnsNumber,
+                 int rowsNumber,
+                 int lastBoard[])
 {
 
     int *p;
@@ -211,8 +233,10 @@ void drawMap(int rowsNumber,
         printf("|");
         for (size_t column = 0; column < columnsNumber; column++)
         {
-
-            printf(GREEN " | %zux%zu (%i) " RESET, row, column, map[row][column]);
+            if (DEBUG_MODE)
+            {
+                printf(GREEN " | %zux%zu (%i) " RESET, row, column, map[row][column]);
+            }
 
             switch (map[row][column])
             {
@@ -238,17 +262,25 @@ void drawMap(int rowsNumber,
     }
 }
 
-bool checkMove(int rowsNumber, int columnsNumber, int playerCurrentPosition[2], int map[playerCurrentPosition[X]][playerCurrentPosition[Y]])
+bool checkMove(int rowsNumber,
+               int columnsNumber,
+               int playerCurrentPosition[2],
+               int map[playerCurrentPosition[X]][playerCurrentPosition[Y]])
 {
 
     if (map[playerCurrentPosition[X]][playerCurrentPosition[Y]] == BLOCO)
     {
-        // Movimento é inválido
-        printf("(%i, %i) É UM BLOCO! \n"
-               "Valor map: % i ",
-               playerCurrentPosition[X],
-               playerCurrentPosition[Y],
-               map[playerCurrentPosition[X]][playerCurrentPosition[Y]]);
+        // move é inválido
+
+        if (DEBUG_MODE)
+        {
+            printf("(%i, %i) É UM BLOCO! \n"
+                   "Valor map: % i ",
+                   playerCurrentPosition[X],
+                   playerCurrentPosition[Y],
+                   map[playerCurrentPosition[X]][playerCurrentPosition[Y]]);
+        }
+
         return true;
     }
     else
